@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# CDK
+infra/cdk.out/
+infra/dist/
+*.js
+*.d.ts
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
