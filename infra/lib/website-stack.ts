@@ -3,13 +3,10 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as route53 from 'aws-cdk-lib/aws-route53';
-import * as route53Targets from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from 'constructs';
 
 export interface WebsiteStackProps extends cdk.StackProps {
   domainName: string;
-  hostedZoneName: string;
 }
 
 export class WebsiteStack extends cdk.Stack {
@@ -30,15 +27,11 @@ export class WebsiteStack extends cdk.Stack {
       versioned: true,
     });
 
-    // Look up existing hosted zone
-    const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: props.hostedZoneName,
-    });
-
     // ACM Certificate for HTTPS
+    // Using DNS validation - you'll need to add the CNAME record in Cloudflare manually
     const certificate = new acm.Certificate(this, 'Certificate', {
       domainName: props.domainName,
-      validation: acm.CertificateValidation.fromDns(hostedZone),
+      validation: acm.CertificateValidation.fromDns(), // Manual DNS validation
     });
 
     // CloudFront Origin Access Control
@@ -77,24 +70,6 @@ export class WebsiteStack extends cdk.Stack {
       httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
     });
 
-    // Route53 A Record
-    new route53.ARecord(this, 'AliasRecord', {
-      zone: hostedZone,
-      recordName: props.domainName,
-      target: route53.RecordTarget.fromAlias(
-        new route53Targets.CloudFrontTarget(this.distribution)
-      ),
-    });
-
-    // Route53 AAAA Record for IPv6
-    new route53.AaaaRecord(this, 'AliasRecordIPv6', {
-      zone: hostedZone,
-      recordName: props.domainName,
-      target: route53.RecordTarget.fromAlias(
-        new route53Targets.CloudFrontTarget(this.distribution)
-      ),
-    });
-
     // Outputs
     new cdk.CfnOutput(this, 'BucketName', {
       value: this.websiteBucket.bucketName,
@@ -108,12 +83,18 @@ export class WebsiteStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'DistributionDomainName', {
       value: this.distribution.distributionDomainName,
-      description: 'CloudFront Distribution Domain Name',
+      description: 'CloudFront Domain - Add CNAME in Cloudflare pointing to this',
     });
 
     new cdk.CfnOutput(this, 'WebsiteUrl', {
       value: `https://${props.domainName}`,
       description: 'Website URL',
+    });
+
+    // Output certificate ARN for reference
+    new cdk.CfnOutput(this, 'CertificateArn', {
+      value: certificate.certificateArn,
+      description: 'ACM Certificate ARN - Check AWS Console for DNS validation records',
     });
   }
 }

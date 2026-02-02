@@ -98,7 +98,7 @@ export class PipelineStack extends cdk.Stack {
               branch: props.githubBranch,
               output: sourceOutput,
               // You need to create this connection in AWS Console first
-              connectionArn: `arn:aws:codeconnections:${this.region}:${this.account}:connection/REPLACE_WITH_YOUR_CONNECTION_ID`,
+              connectionArn: `arn:aws:codeconnections:${this.region}:${this.account}:connection/810c6cd2-410a-4d95-897b-1d54a19f02d6`,
               triggerOnPush: true,
             }),
           ],

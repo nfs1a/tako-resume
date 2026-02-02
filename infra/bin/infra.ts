@@ -8,21 +8,20 @@ const app = new cdk.App();
 // Configuration
 const config = {
   domainName: 'resume.tako.tw',
-  hostedZoneName: 'tako.tw',
   githubOwner: app.node.tryGetContext('githubOwner') || 'YOUR_GITHUB_USERNAME',
   githubRepo: app.node.tryGetContext('githubRepo') || 'tako-resume',
   githubBranch: app.node.tryGetContext('githubBranch') || 'main',
 };
 
-// Website Stack (S3 + CloudFront + Route53)
+// Website Stack (S3 + CloudFront)
 // Must be deployed in us-east-1 for ACM certificate with CloudFront
+// DNS is managed in Cloudflare - you'll add CNAME manually
 const websiteStack = new WebsiteStack(app, 'ResumeWebsiteStack', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: 'us-east-1', // Required for CloudFront + ACM
   },
   domainName: config.domainName,
-  hostedZoneName: config.hostedZoneName,
   crossRegionReferences: true,
 });
 
