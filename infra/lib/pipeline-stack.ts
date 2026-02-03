@@ -62,7 +62,7 @@ export class PipelineStack extends cdk.Stack {
       },
     }));
 
-    // Prod Stage - wait 1 minute after Beta before deploying
+    // Prod Stage - deploy after Beta
     pipeline.addStage(new WebsiteDeployStage(this, 'Prod', {
       domainName: props.domainName,
       stage: 'prod',
@@ -70,12 +70,6 @@ export class PipelineStack extends cdk.Stack {
         account: this.account,
         region: 'us-east-1',
       },
-    }), {
-      pre: [
-        new pipelines.ShellStep('WaitBeforeProd', {
-          commands: ['echo "Waiting 1 minute before Prod deployment..."', 'sleep 60'],
-        }),
-      ],
-    });
+    }));
   }
 }
