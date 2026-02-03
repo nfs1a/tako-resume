@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
@@ -16,9 +17,6 @@ export class WebsiteStack extends cdk.Stack {
   public readonly websiteBucket: s3.Bucket;
   public readonly distribution: cloudfront.Distribution;
   public readonly stage: Stage;
-  // CfnOutputs for pipeline to reference
-  public readonly bucketNameOutput: cdk.CfnOutput;
-  public readonly distributionIdOutput: cdk.CfnOutput;
 
   constructor(scope: Construct, id: string, props: WebsiteStackProps) {
     super(scope, id, props);
@@ -85,18 +83,26 @@ export class WebsiteStack extends cdk.Stack {
       httpVersion: cloudfront.HttpVersion.HTTP2_AND_3,
     });
 
+    // Deploy website content to S3 and invalidate CloudFront cache
+    new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+      sources: [s3deploy.Source.asset('../website')],
+      destinationBucket: this.websiteBucket,
+      distribution: this.distribution,
+      distributionPaths: ['/*'],
+    });
+
     // Outputs
     new cdk.CfnOutput(this, 'Stage', {
       value: props.stage,
       description: 'Deployment Stage',
     });
 
-    this.bucketNameOutput = new cdk.CfnOutput(this, 'BucketName', {
+    new cdk.CfnOutput(this, 'BucketName', {
       value: this.websiteBucket.bucketName,
       description: 'S3 Bucket Name',
     });
 
-    this.distributionIdOutput = new cdk.CfnOutput(this, 'DistributionId', {
+    new cdk.CfnOutput(this, 'DistributionId', {
       value: this.distribution.distributionId,
       description: 'CloudFront Distribution ID',
     });
