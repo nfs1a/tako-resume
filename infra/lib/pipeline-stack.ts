@@ -62,7 +62,7 @@ export class PipelineStack extends cdk.Stack {
       },
     }));
 
-    // Prod Stage - manual approval before deploy
+    // Prod Stage - wait 1 minute after Beta before deploying
     pipeline.addStage(new WebsiteDeployStage(this, 'Prod', {
       domainName: props.domainName,
       stage: 'prod',
@@ -72,8 +72,8 @@ export class PipelineStack extends cdk.Stack {
       },
     }), {
       pre: [
-        new pipelines.ManualApprovalStep('PromoteToProd', {
-          comment: 'Check beta.resume.tako.tw before promoting to production',
+        new pipelines.ShellStep('WaitBeforeProd', {
+          commands: ['echo "Waiting 1 minute before Prod deployment..."', 'sleep 60'],
         }),
       ],
     });
