@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as pipelines from 'aws-cdk-lib/pipelines';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { WebsiteStack, Stage as WebsiteStage } from './website-stack';
 
@@ -69,7 +70,7 @@ export class PipelineStack extends cdk.Stack {
     });
     pipeline.addStage(betaStage, {
       post: [
-        new pipelines.ShellStep('DeployWebsiteContent', {
+        new pipelines.CodeBuildStep('DeployWebsiteContent', {
           input: source,
           envFromCfnOutputs: {
             BUCKET_NAME: betaStage.websiteStack.bucketNameOutput,
@@ -78,6 +79,16 @@ export class PipelineStack extends cdk.Stack {
           commands: [
             'aws s3 sync website/ s3://$BUCKET_NAME/ --delete',
             'aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"',
+          ],
+          rolePolicyStatements: [
+            new iam.PolicyStatement({
+              actions: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject'],
+              resources: ['arn:aws:s3:::beta-resume-tako-tw-website', 'arn:aws:s3:::beta-resume-tako-tw-website/*'],
+            }),
+            new iam.PolicyStatement({
+              actions: ['cloudfront:CreateInvalidation'],
+              resources: ['*'],
+            }),
           ],
         }),
       ],
@@ -99,7 +110,7 @@ export class PipelineStack extends cdk.Stack {
         }),
       ],
       post: [
-        new pipelines.ShellStep('DeployWebsiteContent', {
+        new pipelines.CodeBuildStep('DeployWebsiteContent', {
           input: source,
           envFromCfnOutputs: {
             BUCKET_NAME: prodStage.websiteStack.bucketNameOutput,
@@ -108,6 +119,16 @@ export class PipelineStack extends cdk.Stack {
           commands: [
             'aws s3 sync website/ s3://$BUCKET_NAME/ --delete',
             'aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"',
+          ],
+          rolePolicyStatements: [
+            new iam.PolicyStatement({
+              actions: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject'],
+              resources: ['arn:aws:s3:::resume-tako-tw-website', 'arn:aws:s3:::resume-tako-tw-website/*'],
+            }),
+            new iam.PolicyStatement({
+              actions: ['cloudfront:CreateInvalidation'],
+              resources: ['*'],
+            }),
           ],
         }),
       ],
