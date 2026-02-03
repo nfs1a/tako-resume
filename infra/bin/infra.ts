@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { WebsiteStack } from '../lib/website-stack';
 import { PipelineStack } from '../lib/pipeline-stack';
 
 const app = new cdk.App();
@@ -8,36 +7,29 @@ const app = new cdk.App();
 // Configuration
 const config = {
   domainName: 'resume.tako.tw',
-  githubOwner: app.node.tryGetContext('githubOwner') || 'YOUR_GITHUB_USERNAME',
-  githubRepo: app.node.tryGetContext('githubRepo') || 'tako-resume',
-  githubBranch: app.node.tryGetContext('githubBranch') || 'main',
+  githubOwner: 'nfs1a',
+  githubRepo: 'tako-resume',
+  githubBranch: 'main',
+  connectionArn: 'arn:aws:codeconnections:us-east-1:183226280202:connection/810c6cd2-410a-4d95-897b-1d54a19f02d6',
 };
 
-// Website Stack (S3 + CloudFront)
-// Must be deployed in us-east-1 for ACM certificate with CloudFront
-// DNS is managed in Cloudflare - you'll add CNAME manually
-const websiteStack = new WebsiteStack(app, 'ResumeWebsiteStack', {
-  env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: 'us-east-1', // Required for CloudFront + ACM
-  },
-  domainName: config.domainName,
-  crossRegionReferences: true,
-});
-
-// CI/CD Pipeline Stack
-const pipelineStack = new PipelineStack(app, 'ResumePipelineStack', {
+// CDK Pipeline Stack (self-mutating)
+// This pipeline will:
+// 1. Pull code from GitHub
+// 2. Synth CDK (update itself if CDK code changed)
+// 3. Deploy to Beta
+// 4. Manual approval
+// 5. Deploy to Prod
+new PipelineStack(app, 'ResumePipelineStack', {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: 'us-east-1',
   },
-  websiteBucket: websiteStack.websiteBucket,
-  distribution: websiteStack.distribution,
+  domainName: config.domainName,
   githubOwner: config.githubOwner,
   githubRepo: config.githubRepo,
   githubBranch: config.githubBranch,
+  connectionArn: config.connectionArn,
 });
-
-pipelineStack.addDependency(websiteStack);
 
 app.synth();
