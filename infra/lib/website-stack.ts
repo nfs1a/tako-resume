@@ -16,6 +16,9 @@ export class WebsiteStack extends cdk.Stack {
   public readonly websiteBucket: s3.Bucket;
   public readonly distribution: cloudfront.Distribution;
   public readonly stage: Stage;
+  // CfnOutputs for pipeline to reference
+  public readonly bucketNameOutput: cdk.CfnOutput;
+  public readonly distributionIdOutput: cdk.CfnOutput;
 
   constructor(scope: Construct, id: string, props: WebsiteStackProps) {
     super(scope, id, props);
@@ -88,12 +91,12 @@ export class WebsiteStack extends cdk.Stack {
       description: 'Deployment Stage',
     });
 
-    new cdk.CfnOutput(this, 'BucketName', {
+    this.bucketNameOutput = new cdk.CfnOutput(this, 'BucketName', {
       value: this.websiteBucket.bucketName,
       description: 'S3 Bucket Name',
     });
 
-    new cdk.CfnOutput(this, 'DistributionId', {
+    this.distributionIdOutput = new cdk.CfnOutput(this, 'DistributionId', {
       value: this.distribution.distributionId,
       description: 'CloudFront Distribution ID',
     });
