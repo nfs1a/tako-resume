@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How I Built This - Tako's Resume Infrastructure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            background: #fafafa;
+        }
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #eee;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #222;
+            margin: 32px 0 16px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0066cc;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 24px 0 12px 0;
+        }
+        p {
+            margin-bottom: 16px;
+            color: #444;
+        }
+        .architecture {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px 0;
+            overflow-x: auto;
+        }
+        .architecture pre {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .tech-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .tech-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 8px;
+        }
+        .tech-card p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+        code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+        .code-block .comment { color: #6a9955; }
+        .code-block .keyword { color: #569cd6; }
+        .code-block .string { color: #ce9178; }
+        .code-block .class { color: #4ec9b0; }
+        .highlight-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .highlight-box p {
+            margin: 0;
+            color: #0066cc;
+        }
+        ul {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 8px;
+            color: #444;
+        }
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 16px 0;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .flow-number {
+            width: 32px;
+            height: 32px;
+            background: #0066cc;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-right: 16px;
+        }
+        .flow-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+        }
+        .flow-content p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #24292e;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 16px;
+            transition: background 0.2s;
+        }
+        .github-link:hover {
+            background: #444;
+        }
+        .footer {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">&larr; Back to Resume</a>
+
+        <h1>How I Built This Page</h1>
+        <p class="subtitle">A serverless resume website with fully automated CI/CD deployment on AWS</p>
+
+        <h2>Architecture Overview</h2>
+        <p>This resume website is hosted entirely on AWS using a serverless architecture. Every push to the main branch automatically deploys to both staging and production environments.</p>
+
+        <div class="architecture">
+<pre>
+GitHub (main branch)
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│              AWS CodePipeline               │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  Source  │→ │  Synth   │→ │   Beta   │   │
+│  │  GitHub  │  │   CDK    │  │  Stage   │   │
+│  └──────────┘  └──────────┘  └────┬─────┘   │
+│                                   │         │
+│                              ┌────▼─────┐   │
+│                              │   Prod   │   │
+│                              │  Stage   │   │
+│                              └──────────┘   │
+└─────────────────────────────────────────────┘
+                      │
+           ┌──────────┴──────────┐
+           ▼                     ▼
+   beta.resume.tako.tw    resume.tako.tw
+           │                     │
+           ▼                     ▼
+┌─────────────────┐    ┌─────────────────┐
+│   CloudFront    │    │   CloudFront    │
+│   (CDN + SSL)   │    │   (CDN + SSL)   │
+└────────┬────────┘    └────────┬────────┘
+         │                      │
+         ▼                      ▼
+┌─────────────────┐    ┌─────────────────┐
+│    S3 Bucket    │    │    S3 Bucket    │
+│    (Private)    │    │    (Private)    │
+└─────────────────┘    └─────────────────┘
+</pre>
+        </div>
+
+        <h2>Tech Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <h4>AWS CDK</h4>
+                <p>Infrastructure as Code using TypeScript. Defines all AWS resources in a type-safe, reusable manner.</p>
+            </div>
+            <div class="tech-card">
+                <h4>S3</h4>
+                <p>Private bucket for static website hosting. No public access - secured with Origin Access Control.</p>
+            </div>
+            <div class="tech-card">
+                <h4>CloudFront</h4>
+                <p>Global CDN with HTTPS, HTTP/2, and HTTP/3 support. Provides low-latency access worldwide.</p>
+            </div>
+            <div class="tech-card">
+                <h4>Route 53</h4>
+                <p>DNS management with automatic record creation for CloudFront distributions.</p>
+            </div>
+            <div class="tech-card">
+                <h4>ACM</h4>
+                <p>SSL/TLS certificates with automatic DNS validation and renewal.</p>
+            </div>
+            <div class="tech-card">
+                <h4>CodePipeline</h4>
+                <p>Fully managed CI/CD service that automates build and deployment on every git push.</p>
+            </div>
+        </div>
+
+        <h2>CI/CD Workflow</h2>
+        <p>When I push code to GitHub, the following happens automatically:</p>
+
+        <div class="flow-step">
+            <div class="flow-number">1</div>
+            <div class="flow-content">
+                <h4>Source</h4>
+                <p>CodePipeline detects the push via GitHub CodeConnections and pulls the latest code.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-number">2</div>
+            <div class="flow-content">
+                <h4>Synth</h4>
+                <p>CDK compiles TypeScript infrastructure code into CloudFormation templates.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-number">3</div>
+            <div class="flow-content">
+                <h4>Beta Deployment</h4>
+                <p>Deploys to beta.resume.tako.tw for preview and testing.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-number">4</div>
+            <div class="flow-content">
+                <h4>Production Deployment</h4>
+                <p>Automatically deploys to resume.tako.tw after beta succeeds.</p>
+            </div>
+        </div>
+
+        <h2>Infrastructure Code</h2>
+        <p>The entire infrastructure is defined in two CDK stacks:</p>
+
+        <h3>WebsiteStack</h3>
+        <p>Creates the hosting infrastructure for each environment:</p>
+        <div class="code-block">
+<pre><span class="keyword">const</span> bucket = <span class="keyword">new</span> <span class="class">s3.Bucket</span>(<span class="keyword">this</span>, <span class="string">'WebsiteBucket'</span>, {
+  blockPublicAccess: <span class="class">s3.BlockPublicAccess</span>.BLOCK_ALL,
+  encryption: <span class="class">s3.BucketEncryption</span>.S3_MANAGED,
+});
+
+<span class="keyword">const</span> distribution = <span class="keyword">new</span> <span class="class">cloudfront.Distribution</span>(<span class="keyword">this</span>, <span class="string">'CDN'</span>, {
+  defaultBehavior: {
+    origin: <span class="class">S3BucketOrigin</span>.withOriginAccessControl(bucket),
+    viewerProtocolPolicy: <span class="class">ViewerProtocolPolicy</span>.REDIRECT_TO_HTTPS,
+  },
+  domainNames: [domainName],
+  certificate: certificate,
+});</pre>
+        </div>
+
+        <h3>PipelineStack</h3>
+        <p>Defines the self-mutating CI/CD pipeline:</p>
+        <div class="code-block">
+<pre><span class="keyword">const</span> pipeline = <span class="keyword">new</span> <span class="class">CodePipeline</span>(<span class="keyword">this</span>, <span class="string">'Pipeline'</span>, {
+  synth: <span class="keyword">new</span> <span class="class">ShellStep</span>(<span class="string">'Synth'</span>, {
+    input: <span class="class">CodePipelineSource</span>.connection(repo, branch, { connectionArn }),
+    commands: [
+      <span class="string">'cd infra && npm ci'</span>,
+      <span class="string">'npm run build'</span>,
+      <span class="string">'npx cdk synth'</span>,
+    ],
+  }),
+});
+
+pipeline.addStage(<span class="keyword">new</span> <span class="class">WebsiteStage</span>(<span class="keyword">this</span>, <span class="string">'Beta'</span>, { domainPrefix: <span class="string">'beta'</span> }));
+pipeline.addStage(<span class="keyword">new</span> <span class="class">WebsiteStage</span>(<span class="keyword">this</span>, <span class="string">'Prod'</span>));</pre>
+        </div>
+
+        <h2>Security Features</h2>
+        <ul>
+            <li><strong>Private S3 Bucket</strong> - No public access, content served only through CloudFront</li>
+            <li><strong>Origin Access Control (OAC)</strong> - Latest AWS-recommended method for S3 + CloudFront</li>
+            <li><strong>HTTPS Enforced</strong> - All HTTP requests redirect to HTTPS</li>
+            <li><strong>S3 Managed Encryption</strong> - Data encrypted at rest</li>
+        </ul>
+
+        <h2>Cost</h2>
+        <div class="highlight-box">
+            <p><strong>~$1-2/month</strong> for this entire setup with low traffic. S3 and CloudFront have generous free tiers.</p>
+        </div>
+
+        <h2>Source Code</h2>
+        <p>The complete source code for this infrastructure is available on GitHub:</p>
+        <a href="https://github.com/nfs1a/tako-resume" class="github-link" target="_blank">
+            <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            View on GitHub
+        </a>
+
+        <div class="footer">
+            Built with AWS CDK, deployed automatically via CodePipeline
+        </div>
+    </div>
+</body>
+</html>
