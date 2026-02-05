@@ -73,6 +73,7 @@
             padding: 24px;
             margin: 24px 0;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .architecture pre {
             font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
@@ -80,6 +81,33 @@
             line-height: 1.5;
             color: #333;
             margin: 0;
+            min-width: max-content;
+        }
+        @media screen and (max-width: 600px) {
+            .architecture {
+                padding: 16px;
+                margin: 16px -24px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            .architecture pre {
+                font-size: 11px;
+            }
+            .container {
+                padding: 24px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .code-block {
+                margin: 16px -24px;
+                border-radius: 0;
+                padding: 16px;
+            }
+            .code-block pre {
+                font-size: 11px;
+            }
         }
         .tech-grid {
             display: grid;
