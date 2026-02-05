@@ -33,33 +33,37 @@
             margin-bottom: 12px;
             position: relative;
         }
-        .how-i-built {
-            position: absolute;
-            top: 0;
-            right: 0;
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .btn-group a {
             font-size: 11px;
-            color: #666;
-            text-decoration: none;
-            padding: 4px 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            text-decoration: none !important;
+            padding: 5px 12px;
             transition: all 0.2s;
         }
-        .how-i-built:hover {
-            color: #333 !important;
-            border-color: #999;
-            background: #f5f5f5;
+        .btn-group .download-btn {
+            background: #0066cc;
+            color: #fff !important;
+            border-radius: 4px 0 0 4px;
         }
-        @media screen and (max-width: 600px) {
-            .how-i-built {
-                position: static;
-                display: block;
-                margin: 0 auto 12px auto;
-                width: fit-content;
-            }
+        .btn-group .download-btn:hover {
+            background: #0052a3;
+        }
+        .btn-group .how-i-built {
+            background: #f5f5f5;
+            color: #333 !important;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+        }
+        .btn-group .how-i-built:hover {
+            background: #e8e8e8;
         }
         @media print {
-            .how-i-built {
+            .btn-group {
                 display: none;
             }
         }
@@ -265,7 +269,10 @@
 </head>
 <body>
     <div class="header">
-        <a href="how-i-built.html" class="how-i-built">How I built this</a>
+        <div class="btn-group">
+            <a href="Ming-Shiun (Tako) Tsai - Resume.pdf" class="download-btn" download>Download PDF</a>
+            <a href="how-i-built.html" class="how-i-built">How I built this</a>
+        </div>
         <h1>MING-SHIUN (TAKO) TSAI</h1>
         <div class="contact">
             <span>Seattle, WA</span>
