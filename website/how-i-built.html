@@ -225,6 +225,23 @@
         .github-link:hover {
             background: #444;
         }
+        .pipeline-screenshot {
+            display: block;
+            margin: 24px 0;
+        }
+        .pipeline-screenshot img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .pipeline-screenshot .caption {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #999;
+            text-align: center;
+        }
         .footer {
             margin-top: 48px;
             padding-top: 24px;
@@ -310,38 +327,61 @@ GitHub (main branch)
         </div>
 
         <h2>CI/CD Workflow</h2>
-        <p>When I push code to GitHub, the following happens automatically:</p>
+        <p>When I push code to GitHub, the following stages run automatically in AWS CodePipeline:</p>
 
         <div class="flow-step">
             <div class="flow-number">1</div>
             <div class="flow-content">
                 <h4>Source</h4>
-                <p>CodePipeline detects the push via GitHub CodeConnections and pulls the latest code.</p>
+                <p>CodePipeline detects the push via the GitHub App connection and pulls the latest code.</p>
             </div>
         </div>
 
         <div class="flow-step">
             <div class="flow-number">2</div>
             <div class="flow-content">
-                <h4>Synth</h4>
-                <p>CDK compiles TypeScript infrastructure code into CloudFormation templates.</p>
+                <h4>Build</h4>
+                <p>AWS CodeBuild runs <code>cdk synth</code>, compiling the TypeScript infrastructure code into CloudFormation templates.</p>
             </div>
         </div>
 
         <div class="flow-step">
             <div class="flow-number">3</div>
             <div class="flow-content">
-                <h4>Beta Deployment</h4>
-                <p>Deploys to beta.resume.tako.tw for preview and testing.</p>
+                <h4>UpdatePipeline</h4>
+                <p>A self-mutation step lets the pipeline update its own definition first if the pipeline structure itself changed.</p>
             </div>
         </div>
 
         <div class="flow-step">
             <div class="flow-number">4</div>
             <div class="flow-content">
+                <h4>Assets</h4>
+                <p>Publishes website files and CDK assets (Lambda code, S3 deployment payloads) so they're ready for each stage to deploy.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-number">5</div>
+            <div class="flow-content">
+                <h4>Beta Deployment</h4>
+                <p>Deploys the CloudFormation stack to beta.resume.tako.tw for preview and testing.</p>
+            </div>
+        </div>
+
+        <div class="flow-step">
+            <div class="flow-number">6</div>
+            <div class="flow-content">
                 <h4>Production Deployment</h4>
                 <p>Automatically deploys to resume.tako.tw after beta succeeds.</p>
             </div>
+        </div>
+
+        <div class="pipeline-screenshot">
+            <a href="Pipeline.png" target="_blank" rel="noopener">
+                <img src="Pipeline.png" alt="AWS CodePipeline console showing the Source, Build, UpdatePipeline, Assets, Beta, and Prod stages">
+            </a>
+            <p class="caption">Live view of ResumeWebsitePipeline in the AWS CodePipeline console</p>
         </div>
 
         <h2>Infrastructure Code</h2>
