@@ -277,9 +277,9 @@
         <div class="contact">
             <span>Seattle, WA</span>
             <span class="divider">|</span>
-            <span>+1 (206) 476-5346</span>
+            <span id="phone"></span>
             <span class="divider">|</span>
-            <span>TakoTsai.us@gmail.com</span>
+            <span id="email"></span>
             <span class="divider">|</span>
             <span>linkedin.com/in/TakoTsai</span>
             <span class="divider">|</span>
@@ -442,5 +442,16 @@
             <span class="edu-meta">B.S. in Computer Science & Information Engineering | 2010 – 2014</span>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var phoneParts = ['206', '476', '5346'];
+            document.getElementById('phone').textContent = '+1 (' + phoneParts[0] + ') ' + phoneParts[1] + '-' + phoneParts[2];
+
+            var user = 'TakoTsai.us';
+            var domainParts = ['gmail', 'com'];
+            document.getElementById('email').textContent = user + String.fromCharCode(64) + domainParts.join('.');
+        })();
+    </script>
 </body>
 </html>
